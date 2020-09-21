@@ -28,14 +28,15 @@ from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.ensemble import  AdaBoostClassifier
 from sklearn.svm import SVC
+from skimage.color import rgb2gray
+from skimage import filters
 from sklearn.neighbors import KNeighborsClassifier
 import pickle
 import warnings
 import skimage.io
 import skimage.viewer
-from skimage.filters import gaussian
 from time import time
-from skimage.feature import hog
+from skimage.feature import hog, blob_dog, canny
 from skimage.viewer import  ImageViewer
 # from skimage.transform import rescale
 
@@ -89,6 +90,7 @@ def pre_process3(data_loc, noise):
     labels = os.listdir(data_loc)
     label_data = []
     hog_data = []
+    sobel_data = []
     label_count = 0
     for label in labels:
         img_titles = os.listdir(os.path.join(data_loc, label))
@@ -101,14 +103,20 @@ def pre_process3(data_loc, noise):
                 # blurred = [img]
                 # blurred = gaussian(img, sigma= (3,3), multichannel=True)
                 hog_image = hog(img,feature_vector=True)
+                sobel_img = filters.sobel(rgb2gray(img))
+                shit = sobel_img
+                shit[sobel_img >= np.mean(sobel_img)] = 1.0
+                shit[sobel_img < np.mean(sobel_img)] = 0.0
                 hog_data.append(np.append( hog_image, label_count))
+                sobel_data.append(np.append(shit.flatten(), label_count))
                 label_data.append(np.append(img.flatten(), label_count))
         # data.append(label_data)
         label_count += 1
 
     data = pd.DataFrame(np.asarray(label_data))
     thishog = pd.DataFrame(np.asarray(hog_data))
-    return data, labels, thishog
+    thissobel = pd.DataFrame(np.asarray(sobel_data))
+    return data, labels, thishog, thissobel
 
 #################################Decision tree classifier########################################################
 class decision_tree:
@@ -263,10 +271,12 @@ class KNN:
         conf_mat = confusion_matrix(self.ytest, self.predict(self.xtest))
         return train_acc, test_acc,  conf_mat
 
-def decision_tree_testing(data, csv_file, preprocess=pre_process1, nflag=2):
+def decision_tree_testing(data, csv_file, preprocess=pre_process1, nflag=2,foldername='diabetes'):
     # Decision Tree Classifier main
     # Testing test_split_size
-
+    directory = './figures/'+foldername
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     labels = ["training", "testing", "training w/25% noise", "testing w/25% noise"]
 
     plot_args=[{'c': 'red', 'linestyle': '-'},
@@ -276,7 +286,7 @@ def decision_tree_testing(data, csv_file, preprocess=pre_process1, nflag=2):
     ct1 = 0
     ct2 = 0
 
-    plt.close()
+    plt.close('all')
 
     fig1, ax1 = plt.subplots()
 
@@ -341,20 +351,22 @@ def decision_tree_testing(data, csv_file, preprocess=pre_process1, nflag=2):
     ax1.set_xlabel('data split %')
     ax1.set_ylabel('% accurate')
     fig1.legend(ax1.get_lines(), labels, ncol=3, loc="upper center")
-    with open('./figures/decision_tree_data_split1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/decision_tree_data_split1.pkl', 'wb') as fid:
         pickle.dump(ax1, fid)
-    fig1.savefig('./figures/decision_tree_data_split1.png')# fig1.show()
+    fig1.savefig('./figures/'+foldername+'/decision_tree_data_split1.png')# fig1.show()
     ax2.set_title('exploring pruning w/ Decision Trees (0% noise vs 25% noise)')
     ax2.set_xlabel('tree max depth (pruning)')
     ax2.set_ylabel('% accurate')
     fig2.legend(ax2.get_lines(), labels, ncol=3, loc="upper center")
-    with open('./figures/decision_tree_prune1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/decision_tree_prune1.pkl', 'wb') as fid:
         pickle.dump(ax2, fid)
-    fig2.savefig('./figures/decision_tree_prune1.png')#fig2.show()
+    fig2.savefig('./figures/'+foldername+'/decision_tree_prune1.png')#fig2.show()
     # plt.show()
 
-def neural_net_testing(data, csv_file, preprocess=pre_process1, nflag=2):
-
+def neural_net_testing(data, csv_file, preprocess=pre_process1, nflag=2,foldername='diabetes'):
+    directory = './figures/'+foldername
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     plot_args = [{'c': 'red', 'linestyle': '-'},
                  {'c': 'red', 'linestyle': '--'},
                  {'c': 'red', 'linestyle': '-.'},
@@ -387,7 +399,7 @@ def neural_net_testing(data, csv_file, preprocess=pre_process1, nflag=2):
               "adam 0.05 tanh", "adam 0.01 tanh", "adam 0.005 tanh",
               "adam 0.05 relu", "adam 0.01 relu", "adam 0.005 relu"]
 
-    plt.close()
+    plt.close('all')
     fig, ax = plt.subplots()
 
     split_acc = []
@@ -409,6 +421,28 @@ def neural_net_testing(data, csv_file, preprocess=pre_process1, nflag=2):
             split_acc.append([train_acc, test_acc, conf_mat])
             mlps.append(nn)
 
+    fig11, ax11 = plt.subplots()
+    ct=0
+    for i in range(2):
+        this_data = [d[i] for d in split_acc]
+        this_x = range(len(this_data))
+        ax11.plot(this_x, this_data, label=[labels[ct]], **plot_args[ct])
+        ct += 1
+
+    xlabels = ["0.05 id", "0.01 id", "0.005 id",
+              "0.05 log", "0.01 log", "0.005 log",
+              "0.05 tanh", "0.01 tanh", "0.005 tanh",
+              "0.05 relu", "0.01 relu", "0.005 relu"]
+    noise_lab = ["0% noise", "25% noise"]
+    fig.legend(ax.get_lines(), noise_lab, ncol=3, loc="upper center")
+    plt.xticks(this_x, xlabels)
+    ax11.set_title('NN error by activation/lr (0% noise vs 25% noise)')
+    ax11.set_xlabel('params used')
+    ax11.set_ylabel('% accurate')
+    with open('./figures/'+foldername+'/nn_error_1.pkl', 'wb') as fid:
+        pickle.dump(ax11, fid)
+    fig.savefig('./figures/'+foldername+'/nn_error_1.png')  #plt.show()
+
     for mlp, label, args in zip(mlps, labels, plot_args):
 
         if mlp.nn.solver == 'lbfgs':
@@ -420,9 +454,9 @@ def neural_net_testing(data, csv_file, preprocess=pre_process1, nflag=2):
     fig.legend(ax.get_lines(), labels, ncol=3, loc="upper center")
     ax.set_xlabel('iteration')
     ax.set_ylabel('data loss')
-    with open('./figures/neural_net_lr_activate_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/neural_net_lr_activate_1.pkl', 'wb') as fid:
         pickle.dump(ax, fid)
-    fig.savefig('./figures/neural_net_lr_activate_1.png')  #plt.show()
+    fig.savefig('./figures/'+foldername+'/neural_net_lr_activate_1.png')  #plt.show()
 
     #-------------------------------------------------solvers --------------------------------------------------------------
     params = [{'solver': 'lbfgs'},
@@ -452,6 +486,25 @@ def neural_net_testing(data, csv_file, preprocess=pre_process1, nflag=2):
             split_acc.append([train_acc, test_acc, conf_mat])
             mlps.append(nn)
 
+    fig12, ax12 = plt.subplots()
+    ct=0
+    for i in range(2):
+        this_data = [d[i] for d in split_acc]
+        this_x = range(len(this_data))
+        ax12.plot(this_x, this_data, label=[labels[ct]], **plot_args[ct])
+        ct += 1
+
+    noise_lab = ["0% noise", "25% noise"]
+    xlabels = ["lbfgs", "sgd 0.01", "adam 0.01"]
+    fig.legend(ax.get_lines(), noise_lab, ncol=3, loc="upper center")
+    plt.xticks(this_x, xlabels)
+    ax12.set_title('NN error by solver (0% noise vs 25% noise)')
+    ax12.set_xlabel('params used')
+    ax12.set_ylabel('% accurate')
+    with open('./figures/'+foldername+'/nn_error_2.pkl', 'wb') as fid:
+        pickle.dump(ax12, fid)
+    fig.savefig('./figures/'+foldername+'/nn_error_2.png')  #plt.show()
+
     for mlp, label, args in zip(mlps, labels, plot_args):
 
         if mlp.nn.solver == 'lbfgs':
@@ -463,9 +516,9 @@ def neural_net_testing(data, csv_file, preprocess=pre_process1, nflag=2):
     ax.set_title('neural nets solvers (loss vs training instance)')
     ax.set_xlabel('iteration')
     ax.set_ylabel('data loss')
-    with open('./figures/neural_net_solver_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/neural_net_solver_1.pkl', 'wb') as fid:
         pickle.dump(ax, fid)
-    fig.savefig('./figures/neural_net_solver_1.png')  #plt.show()
+    fig.savefig('./figures/'+foldername+'/neural_net_solver_1.png')  #plt.show()
 
 
     params = [{'hidden_layer_sizes': (50, ), 'solver': 'adam', 'learning_rate_init': 0.01},
@@ -500,6 +553,24 @@ def neural_net_testing(data, csv_file, preprocess=pre_process1, nflag=2):
             split_acc.append([train_acc, test_acc, conf_mat])
             mlps.append(nn)
 
+    fig13, ax13 = plt.subplots()
+    ct=0
+    for i in range(2):
+        this_data = [d[i] for d in split_acc]
+        this_x = range(len(this_data))
+        ax13.plot(this_x, this_data, label=[labels[ct]], **plot_args[ct])
+        ct += 1
+    noise_lab = ["0% noise", "25% noise"]
+    xlabels = ["lbfgs", "sgd 0.01", "adam 0.01"]
+    fig.legend(ax.get_lines(), noise_lab, ncol=3, loc="upper center")
+    plt.xticks(this_x, xlabels)
+    ax13.set_title('NN error by hidden layer (0% noise vs 25% noise)')
+    ax13.set_xlabel('params used')
+    ax13.set_ylabel('% accurate')
+    with open('./figures/'+foldername+'/nn_error_3.pkl', 'wb') as fid:
+        pickle.dump(ax13, fid)
+    fig.savefig('./figures/'+foldername+'/nn_error_3.png')  #plt.show()
+
     for mlp, label, args in zip(mlps, labels, plot_args):
 
         if mlp.nn.solver == 'lbfgs':
@@ -511,14 +582,16 @@ def neural_net_testing(data, csv_file, preprocess=pre_process1, nflag=2):
     ax.set_title('neural nets hidden layers (loss vs training instance)')
     ax.set_xlabel('iteration')
     ax.set_ylabel('data loss')
-    with open('./figures/neural_net_hidden_layer_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/neural_net_hidden_layer_1.pkl', 'wb') as fid:
         pickle.dump(ax, fid)
-    fig.savefig('./figures/neural_net_hidden_layer_1.png')#plt.show()
+    fig.savefig('./figures/'+foldername+'/neural_net_hidden_layer_1.png')#plt.show()
 
-def boosting_testing(data, csv_file,preprocess=pre_process1, nflag=2):
+def boosting_testing(data, csv_file,preprocess=pre_process1, nflag=2, foldername='diabetes'):
     # Decision Tree Classifier main
     # Testing test_split_size
-
+    directory = './figures/'+foldername
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     labels = ["training", "testing", "training w/25% noise", "testing w/25% noise"]
 
     plot_args=[{'c': 'red', 'linestyle': '-'},
@@ -529,7 +602,7 @@ def boosting_testing(data, csv_file,preprocess=pre_process1, nflag=2):
     ct2 = 0
     ct3 = 0
 
-    plt.close()
+    plt.close('all')
 
     fig1, ax1 = plt.subplots()
 
@@ -622,29 +695,32 @@ def boosting_testing(data, csv_file,preprocess=pre_process1, nflag=2):
     ax1.set_xlabel('learning rate')
     ax1.set_ylabel('% accurate')
     fig1.legend(ax1.get_lines(), labels, ncol=3, loc="upper center")
-    with open('./figures/boosting_lr_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/boosting_lr_1.pkl', 'wb') as fid:
         pickle.dump(ax1, fid)
-    fig1.savefig('./figures/boosting_lr_1.png')  #fig1.show()
+    fig1.savefig('./figures/'+foldername+'/boosting_lr_1.png')  #fig1.show()
 
     ax2.set_title('exploring # of estimators w/ Boosting (0% noise vs 25% noise)')
     ax2.set_xlabel('# of estimators')
     ax2.set_ylabel('% accurate')
     fig2.legend(ax2.get_lines(), labels, ncol=3, loc="upper center")
-    with open('./figures/boosting_num_est_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/boosting_num_est_1.pkl', 'wb') as fid:
         pickle.dump(ax2, fid)
-    fig2.savefig('./figures/boosting_num_est_1.png')  #fig2.show()
+    fig2.savefig('./figures/'+foldername+'/boosting_num_est_1.png')  #fig2.show()
 
     ax3.set_title('exploring pruning w/ Boosting (0% noise vs 25% noise)')
     ax3.set_xlabel('tree max depth (pruning)')
     ax3.set_ylabel('% accurate')
     fig3.legend(ax3.get_lines(), labels, ncol=3, loc="upper center")
-    with open('./figures/boosting_prune_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/boosting_prune_1.pkl', 'wb') as fid:
         pickle.dump(ax3, fid)
-    fig3.savefig('./figures/boosting_prune_1.png')  #fig3.show()
+    fig3.savefig('./figures/'+foldername+'/boosting_prune_1.png')  #fig3.show()
     # plt.show()
 
-def svm_testing(data, csv_file, preprocess=pre_process1, nflag=2):
-    plt.close()
+def svm_testing(data, csv_file, preprocess=pre_process1, nflag=2,foldername='diabetes'):
+    directory = './figures/'+foldername
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    plt.close('all')
     fig, ax = plt.subplots()
 
     params = [{'kernel': 'poly', 'degree': 2},
@@ -656,7 +732,7 @@ def svm_testing(data, csv_file, preprocess=pre_process1, nflag=2):
 
     labels = ["training", "testing", "training w/25% noise", "testing w/25% noise"]
 
-    xlabels = ["poly deg 2", "poly deg 5", "poly deg 8", "sigmoid", "gaussian" ]
+    xlabels = ["poly deg 2", "poly deg 5", "poly deg 8", "gaussian", "sigmoid"]
 
     plot_args=[{'c': 'red', 'linestyle': '-'},
                      {'c': 'red', 'linestyle': '--'},
@@ -691,19 +767,20 @@ def svm_testing(data, csv_file, preprocess=pre_process1, nflag=2):
             ax.plot(this_x, this_data, label=[labels[ct]], **plot_args[ct])
             ct += 1
 
-
     fig.legend(ax.get_lines(), labels, ncol=3, loc="upper center")
     plt.xticks(this_x, xlabels)
     ax.set_title('exploring kernels w/ SVN (0% noise vs 25% noise)')
     ax.set_xlabel('kernel used')
     ax.set_ylabel('% accurate')
-    with open('./figures/svn_kernels_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/svn_kernels_1.pkl', 'wb') as fid:
         pickle.dump(ax, fid)
-    fig.savefig('./figures/svn_kernels_1.png')  #plt.show()
+    fig.savefig('./figures/'+foldername+'/svn_kernels_1.png')  #plt.show()
     shit = 0
 
-def knn_testing(data, csv_file,preprocess=pre_process1, nflag=2):
-
+def knn_testing(data, csv_file,preprocess=pre_process1, nflag=2,foldername='diabetes'):
+    directory = './figures/'+foldername
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     params = [{'n_neighbors': 3},
               {'n_neighbors': 5},
               {'n_neighbors': 7},
@@ -721,7 +798,7 @@ def knn_testing(data, csv_file,preprocess=pre_process1, nflag=2):
     mlps = []
     ct = 0
 
-    plt.close()
+    plt.close('all')
     fig, ax = plt.subplots()
     for j in range(nflag):
         split_acc = []
@@ -756,9 +833,9 @@ def knn_testing(data, csv_file,preprocess=pre_process1, nflag=2):
     ax.set_title('exploring KNN # neighbor (loss vs training instance vs noise)')
     ax.set_xlabel('k (num of neighbors ')
     ax.set_ylabel('% accurate')
-    with open('./figures/knn_num_neighbors_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/knn_num_neighbors_1.pkl', 'wb') as fid:
         pickle.dump(ax, fid)
-    fig.savefig('./figures/knn_num_neighbors_1.png')  #plt.show()
+    fig.savefig('./figures/'+foldername+'/knn_num_neighbors_1.png')  #plt.show()
     shit = 0
 
 def reload_figure(filename):
@@ -773,10 +850,12 @@ def show(flat_img, imgshape):
 def show_simple(flat_img, imgshape):
     skimage.io.imshow(flat_img._values.reshape(imgshape))
 
-def decision_tree_testing2(data, csv_file, preprocess=pre_process1, nflag=2):
+def decision_tree_testing2(data, csv_file, preprocess=pre_process1, nflag=2, foldername='coral_reef'):
     # Decision Tree Classifier main
     # Testing test_split_size
-
+    directory = './figures/'+foldername
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     labels = ["training", "testing", "training w/25% noise", "testing w/25% noise"]
 
     plot_args=[{'c': 'red', 'linestyle': '-'},
@@ -786,7 +865,7 @@ def decision_tree_testing2(data, csv_file, preprocess=pre_process1, nflag=2):
     ct1 = 0
     ct2 = 0
 
-    plt.close()
+    plt.close('all')
 
     fig1, ax1 = plt.subplots()
 
@@ -847,24 +926,26 @@ def decision_tree_testing2(data, csv_file, preprocess=pre_process1, nflag=2):
             ax2.plot(x_axis2, this_data, label=[labels[ct2]], **plot_args[ct2])
             ct2 += 1
 
-    ax1.set_title('exploring data split w/ Decision Trees (0% noise vs 25% noise)')
+    ax1.set_title('exploring data split w/ Decision Trees')
     ax1.set_xlabel('data split %')
     ax1.set_ylabel('% accurate')
     fig1.legend(ax1.get_lines(), labels, ncol=3, loc="upper center")
-    with open('./figures/decision_tree_data_split1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/decision_tree_data_split1.pkl', 'wb') as fid:
         pickle.dump(ax1, fid)
-    fig1.savefig('./figures/decision_tree_data_split1.png')# fig1.show()
+    fig1.savefig('./figures/'+foldername+'/decision_tree_data_split1.png')# fig1.show()
     ax2.set_title('exploring pruning w/ Decision Trees (0% noise vs 25% noise)')
     ax2.set_xlabel('tree max depth (pruning)')
     ax2.set_ylabel('% accurate')
     fig2.legend(ax2.get_lines(), labels, ncol=3, loc="upper center")
-    with open('./figures/decision_tree_prune1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/decision_tree_prune1.pkl', 'wb') as fid:
         pickle.dump(ax2, fid)
-    fig2.savefig('./figures/decision_tree_prune1.png')#fig2.show()
+    fig2.savefig('./figures/'+foldername+'/decision_tree_prune1.png')#fig2.show()
     # plt.show()
 
-def neural_net_testing2(data, csv_file, preprocess=pre_process1, nflag=2):
-
+def neural_net_testing2(data, csv_file, preprocess=pre_process1, nflag=2, foldername='coral_reef'):
+    directory = './figures/'+foldername
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     plot_args = [{'c': 'red', 'linestyle': '-'},
                  {'c': 'red', 'linestyle': '--'},
                  {'c': 'red', 'linestyle': '-.'},
@@ -885,8 +966,10 @@ def neural_net_testing2(data, csv_file, preprocess=pre_process1, nflag=2):
               {'solver': 'adam', 'learning_rate_init': 0.005, 'activation': 'relu', 'hidden_layer_sizes': (800, )},
               {'solver': 'adam', 'learning_rate_init': 0.005, 'activation': 'relu', 'hidden_layer_sizes': (1600, )}]
 
+    labels = ["(100,)", '(200,)', '(400,)', '(800,)', '(1600,)']
 
-    plt.close()
+
+    plt.close('all')
     fig, ax = plt.subplots()
 
     split_acc = []
@@ -922,9 +1005,9 @@ def neural_net_testing2(data, csv_file, preprocess=pre_process1, nflag=2):
     fig.legend(ax.get_lines(), labels, ncol=3, loc="upper center")
     ax.set_xlabel('iteration')
     ax.set_ylabel('data loss')
-    with open('./figures/neural_net_lr_activate_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/neural_net_lr_activate_1.pkl', 'wb') as fid:
         pickle.dump(ax, fid)
-    fig.savefig('./figures/neural_net_lr_activate_1.png')  #plt.show()
+    fig.savefig('./figures/'+foldername+'/neural_net_lr_activate_1.png')  #plt.show()
 
     fig2, ax2 = plt.subplots()
 
@@ -934,14 +1017,16 @@ def neural_net_testing2(data, csv_file, preprocess=pre_process1, nflag=2):
     ax2.set_title('nnlearning times')
     ax2.set_xlabel('params used')
     ax2.set_ylabel('times (s)')
-    with open('./figures/nn_times.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/nn_times.pkl', 'wb') as fid:
         pickle.dump(ax2, fid)
-    fig2.savefig('./figures/nn_times.png')  #plt.show()
+    fig2.savefig('./figures/'+foldername+'/nn_times.png')  #plt.show()
 
-def boosting_testing2(data, csv_file,preprocess=pre_process1, nflag=2):
+def boosting_testing2(data, csv_file,preprocess=pre_process1, nflag=2, foldername='coral_reef'):
     # Decision Tree Classifier main
     # Testing test_split_size
-
+    directory = './figures/'+foldername
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     labels = ["training", "testing", "training w/25% noise", "testing w/25% noise"]
 
     plot_args=[{'c': 'red', 'linestyle': '-'},
@@ -952,7 +1037,7 @@ def boosting_testing2(data, csv_file,preprocess=pre_process1, nflag=2):
     ct2 = 0
     ct3 = 0
 
-    plt.close()
+    plt.close('all')
 
     fig1, ax1 = plt.subplots()
 
@@ -997,9 +1082,9 @@ def boosting_testing2(data, csv_file,preprocess=pre_process1, nflag=2):
         ax1.set_xlabel('learning rate')
         ax1.set_ylabel('% accurate')
         fig1.legend(ax1.get_lines(), labels, ncol=3, loc="upper center")
-        with open('./figures/boosting_lr_1.pkl', 'wb') as fid:
+        with open('./figures/'+foldername+'/boosting_lr_1.pkl', 'wb') as fid:
             pickle.dump(ax1, fid)
-        fig1.savefig('./figures/boosting_lr_1.png')  # fig1.show()
+        fig1.savefig('./figures/'+foldername+'/boosting_lr_1.png')  # fig1.show()
 
         n_est_acc=[]
         best_acc = -9999
@@ -1029,9 +1114,9 @@ def boosting_testing2(data, csv_file,preprocess=pre_process1, nflag=2):
         ax2.set_xlabel('# of estimators')
         ax2.set_ylabel('% accurate')
         fig2.legend(ax2.get_lines(), labels, ncol=3, loc="upper center")
-        with open('./figures/boosting_num_est_1.pkl', 'wb') as fid:
+        with open('./figures/'+foldername+'/boosting_num_est_1.pkl', 'wb') as fid:
             pickle.dump(ax2, fid)
-        fig2.savefig('./figures/boosting_num_est_1.png')  # fig2.show()
+        fig2.savefig('./figures/'+foldername+'/boosting_num_est_1.png')  # fig2.show()
 
         # print('best split = ', best_split)
         # PRUNING
@@ -1060,13 +1145,16 @@ def boosting_testing2(data, csv_file,preprocess=pre_process1, nflag=2):
         ax3.set_xlabel('tree max depth (pruning)')
         ax3.set_ylabel('% accurate')
         fig3.legend(ax3.get_lines(), labels, ncol=3, loc="upper center")
-        with open('./figures/boosting_prune_1.pkl', 'wb') as fid:
+        with open('./figures/'+foldername+'/boosting_prune_1.pkl', 'wb') as fid:
             pickle.dump(ax3, fid)
-        fig3.savefig('./figures/boosting_prune_1.png')  #fig3.show()
+        fig3.savefig('./figures/'+foldername+'/boosting_prune_1.png')  #fig3.show()
         # plt.show()
 
-def svm_testing2(data, csv_file, preprocess=pre_process1, nflag=2):
-    plt.close()
+def svm_testing2(data, csv_file, preprocess=pre_process1, nflag=2, foldername='coral_reef'):
+    directory = './figures/'+foldername
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    plt.close('all')
     fig, ax = plt.subplots()
 
     params = [{'kernel': 'poly', 'degree': 2},
@@ -1078,7 +1166,7 @@ def svm_testing2(data, csv_file, preprocess=pre_process1, nflag=2):
 
     labels = ["training", "testing", "training w/25% noise", "testing w/25% noise"]
 
-    xlabels = ["poly deg 2", "poly deg 5", "poly deg 8", "sigmoid", "gaussian" ]
+    xlabels = ["poly deg 2", "poly deg 5", "poly deg 8", "gaussian", "sigmoid" ]
 
     plot_args=[{'c': 'red', 'linestyle': '-'},
                      {'c': 'red', 'linestyle': '--'},
@@ -1119,13 +1207,15 @@ def svm_testing2(data, csv_file, preprocess=pre_process1, nflag=2):
     ax.set_title('exploring kernels w/ SVN (0% noise vs 25% noise)')
     ax.set_xlabel('kernel used')
     ax.set_ylabel('% accurate')
-    with open('./figures/svn_kernels_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/svn_kernels_1.pkl', 'wb') as fid:
         pickle.dump(ax, fid)
-    fig.savefig('./figures/svn_kernels_1.png')  #plt.show()
+    fig.savefig('./figures/'+foldername+'/svn_kernels_1.png')  #plt.show()
     shit = 0
 
-def knn_testing2(data, csv_file,preprocess=pre_process1, nflag=2):
-
+def knn_testing2(data, csv_file,preprocess=pre_process1, nflag=2, foldername='coral_reef'):
+    directory = './figures/'+foldername
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     params = [{'n_neighbors': 3},
               {'n_neighbors': 5},
               {'n_neighbors': 7},
@@ -1143,7 +1233,7 @@ def knn_testing2(data, csv_file,preprocess=pre_process1, nflag=2):
     mlps = []
     ct = 0
 
-    plt.close()
+    plt.close('all')
     fig, ax = plt.subplots()
     for j in range(nflag):
         split_acc = []
@@ -1178,53 +1268,56 @@ def knn_testing2(data, csv_file,preprocess=pre_process1, nflag=2):
     ax.set_title('exploring KNN # neighbor (loss vs training instance vs noise)')
     ax.set_xlabel('k (num of neighbors ')
     ax.set_ylabel('% accurate')
-    with open('./figures/knn_num_neighbors_1.pkl', 'wb') as fid:
+    with open('./figures/'+foldername+'/knn_num_neighbors_1.pkl', 'wb') as fid:
         pickle.dump(ax, fid)
-    fig.savefig('./figures/knn_num_neighbors_1.png')  #plt.show()
+    fig.savefig('./figures/'+foldername+'/knn_num_neighbors_1.png')  #plt.show()
     shit = 0
 
 def main():
 
     fix=False
+    fix_data_split = True
+    fix_prune = True
+    fix_nn_times = True
+    fix_boost_prune=True
+    fix_boost_nest=True
+    fix_boost_lr=True
+    fix_svm_kernel=True
+    fix_knn=True
     if fix:
-        # filename = './figures/diabetes/neural_net_lr_activate_1.pkl'
-        # reload_figure(filename)
-
-        filename = './figures/diabetes/neural_net_solver_1.pkl'
+        filename = './figures/coral_reef2/sobel/neural_net_lr_activate_1.pkl'
         reload_figure(filename)
 
-        filename = './figures/diabetes/neural_net_hidden_layer_1.pkl'
-        reload_figure(filename)
 
-    reload = True
-    d1 = False
+    force_reload = False
+    d1 = True
     d2 = False
-    d3 = False
+    d3 = False # DONT USE
     d4 = True
     if d1:
         dataset1 = "diabetes_data_upload.csv" # https://archive.ics.uci.edu/ml/datasets/Early+stage+diabetes+risk+prediction+dataset
         print(' ----------------------------------- Decision Tree Data set 1 --------------------------------------')
-        decision_tree_testing(data= [], csv_file=dataset1, preprocess= pre_process1, nflag=2)
+        # decision_tree_testing(data= [], csv_file=dataset1, preprocess= pre_process1, nflag=2, foldername='diabetes')
         print(' ----------------------------------- Neural Net Data set 1 --------------------------------------')
-        neural_net_testing(data= [], csv_file=dataset1, preprocess= pre_process1, nflag=2)
+        # neural_net_testing(data= [], csv_file=dataset1, preprocess= pre_process1, nflag=2, foldername='diabetes')
         print(' ----------------------------------- BOOSTING Data set 1 --------------------------------------')
-        boosting_testing(data= [], csv_file=dataset1, preprocess= pre_process1, nflag=2)
+        # boosting_testing(data= [], csv_file=dataset1, preprocess= pre_process1, nflag=2, foldername='diabetes')
         print(' ----------------------------------- Super Vector Machine Data set 1 --------------------------------------')
-        svm_testing(data= [], csv_file=dataset1, preprocess= pre_process1, nflag=2)
+        svm_testing(data= [], csv_file=dataset1, preprocess= pre_process1, nflag=2, foldername='diabetes')
         print(' ----------------------------------- K Neighbors Data set 1 --------------------------------------')
-        knn_testing(data= [], csv_file=dataset1, preprocess= pre_process1, nflag=2)
+        knn_testing(data= [], csv_file=dataset1, preprocess= pre_process1, nflag=2, foldername='diabetes')
     if d2:
         dataset2 = "mushrooms.csv"  # https://www.kaggle.com/uciml/mushroom-classification#
         print(' ----------------------------------- Decision Tree Data set 1 --------------------------------------')
-        decision_tree_testing(data= [], csv_file=dataset2, preprocess= pre_process2, nflag=2)
+        decision_tree_testing(data= [], csv_file=dataset2, preprocess= pre_process2, nflag=2, foldername='mushroom')
         print(' ----------------------------------- Neural Net Data set 1 --------------------------------------')
-        neural_net_testing(data= [], csv_file=dataset2, preprocess= pre_process2, nflag=2)
+        neural_net_testing(data= [], csv_file=dataset2, preprocess= pre_process2, nflag=2, foldername='mushroom')
         print(' ----------------------------------- BOOSTING Data set 1 --------------------------------------')
-        boosting_testing(data= [], csv_file=dataset2, preprocess= pre_process2, nflag=2)
+        boosting_testing(data= [], csv_file=dataset2, preprocess= pre_process2, nflag=2, foldername='mushroom')
         print(' ----------------------------------- Super Vector Machine Data set 1 --------------------------------------')
-        svm_testing(data= [], csv_file=dataset2, preprocess= pre_process2, nflag=2)
+        svm_testing(data= [], csv_file=dataset2, preprocess= pre_process2, nflag=2, foldername='mushroom')
         print(' ----------------------------------- K Neighbors Data set 1 --------------------------------------')
-        knn_testing(data= [], csv_file=dataset2, preprocess= pre_process2, nflag=2)
+        knn_testing(data= [], csv_file=dataset2, preprocess= pre_process2, nflag=2, foldername='mushroom')
     if d3:
         data_loc = "./REEF_DATASET/EILAT2/"
         # data_loc = "./REEF_DATASET/RSMAS/"
@@ -1237,66 +1330,387 @@ def main():
                 pickle.dump([data, label, hog_d], f)
 
         print(' ----------------------------------- Decision Tree Data set 1 --------------------------------------')
-        decision_tree_testing2(data= (data, label), csv_file=[], preprocess= [], nflag=1)
+        decision_tree_testing2(data= (data, label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef')
         print(' ----------------------------------- Neural Net Data set 1 --------------------------------------')
-        neural_net_testing2(data= (data, label), csv_file=[], preprocess= [], nflag=1)
+        neural_net_testing2(data= (data, label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef')
         print(' ----------------------------------- BOOSTING Data set 1 --------------------------------------')
-        boosting_testing2(data= (data, label), csv_file=[], preprocess= [], nflag=1)
+        boosting_testing2(data= (data, label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef')
         print(' ----------------------------------- Super Vector Machine Data set 1 --------------------------------------')
-        svm_testing2(data= (data, label), csv_file=[], preprocess= [], nflag=1)
+        svm_testing2(data= (data, label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef')
         print(' ----------------------------------- K Neighbors Data set 1 --------------------------------------')
-        knn_testing2(data= (data, label), csv_file=[], preprocess= [], nflag=1)
+        knn_testing2(data= (data, label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef')
 
         print('-----------------------------------------USING HOG -------------------------------------------')
 
         print(' ----------------------------------- Decision Tree Data set 1 --------------------------------------')
-        decision_tree_testing2(data= (hog_d, label), csv_file=[], preprocess= [], nflag=1)
+        decision_tree_testing2(data= (hog_d, label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef_hog')
         print(' ----------------------------------- Neural Net Data set 1 --------------------------------------')
-        neural_net_testing2(data= (hog_d, label), csv_file=[], preprocess= [], nflag=1)
+        neural_net_testing2(data= (hog_d, label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef_hog')
         print(' ----------------------------------- BOOSTING Data set 1 --------------------------------------')
-        boosting_testing2(data= (hog_d, label), csv_file=[], preprocess= [], nflag=1)
+        boosting_testing2(data= (hog_d, label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef_hog')
         print(' ----------------------------------- Super Vector Machine Data set 1 --------------------------------------')
-        svm_testing2(data= (hog_d, label), csv_file=[], preprocess= [], nflag=1)
+        svm_testing2(data= (hog_d, label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef_hog')
         print(' ----------------------------------- K Neighbors Data set 1 --------------------------------------')
-        knn_testing2(data= (hog_d, label), csv_file=[], preprocess= [], nflag=1)
+        knn_testing2(data= (hog_d, label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef_hog')
     if d4:
         normal = True
-        uhog = False
+        uhog = True
+        usobel = True
         data_loc = "./REEF_DATASET/EILAT2/"
         # data_loc = "./REEF_DATASET/RSMAS/"
-        if os.path.isfile('./eilat.pkl') and not reload:
+        if os.path.isfile('./eilat.pkl') and not force_reload:
+            print('pulling from ./eilat.pkl')
             with open('eilat.pk1', 'rb') as f:
-                [data, label, hog_d]= pickle.load(f)
+                [data, label, hog_d, sobel_img]= pickle.load(f)
         else:
-            data,label,hog_d = pre_process3(data_loc, [])
+            data,label,hog_d, sobel_img = pre_process3(data_loc, [])
             with open('eilat.pkl', 'wb') as f:
-                pickle.dump([data, label, hog_d], f)
+                pickle.dump([data, label, hog_d, sobel_img], f)
         if normal:
             print(' ----------------------------------- Decision Tree Data set 1 --------------------------------------')
-            # decision_tree_testing(data= (data,label), csv_file=[], preprocess= [], nflag=1)
+            decision_tree_testing2(data= (data,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2')
             print(' ----------------------------------- Neural Net Data set 1 --------------------------------------')
-            neural_net_testing2(data= (data,label), csv_file=[], preprocess= [], nflag=1)
+            neural_net_testing2(data= (data,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2')
             print(' ----------------------------------- BOOSTING Data set 1 --------------------------------------')
-            boosting_testing(data= (data,label), csv_file=[], preprocess= [], nflag=1)
+            boosting_testing2(data= (data,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2')
             print(' ----------------------------------- Super Vector Machine Data set 1 --------------------------------------')
-            svm_testing(data= (data,label), csv_file=[], preprocess= [], nflag=1)
+            svm_testing2(data= (data,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2')
             print(' ----------------------------------- K Neighbors Data set 1 --------------------------------------')
-            knn_testing(data= (data,label), csv_file=[], preprocess= [], nflag=1)
+            knn_testing2(data= (data,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2')
 
         if uhog:
             print('-----------------------------------------USING HOG -------------------------------------------')
 
             print(' ----------------------------------- Decision Tree Data set 1 --------------------------------------')
-            decision_tree_testing(data= (hog_d,label), csv_file=[], preprocess= [], nflag=1)
+            decision_tree_testing2(data= (hog_d,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2_hog')
             print(' ----------------------------------- Neural Net Data set 1 --------------------------------------')
-            neural_net_testing(data= (hog_d,label), csv_file=[], preprocess= [], nflag=1)
+            neural_net_testing2(data= (hog_d,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2_hog')
             print(' ----------------------------------- BOOSTING Data set 1 --------------------------------------')
-            boosting_testing(data= (hog_d,label), csv_file=[], preprocess= [], nflag=1)
+            boosting_testing2(data= (hog_d,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2_hog')
             print(' ----------------------------------- Super Vector Machine Data set 1 --------------------------------------')
-            svm_testing(data= (hog_d,label), csv_file=[], preprocess= [], nflag=1)
+            svm_testing2(data= (hog_d,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2_hog')
             print(' ----------------------------------- K Neighbors Data set 1 --------------------------------------')
-            knn_testing(data= (hog_d,label), csv_file=[], preprocess= [], nflag=1)
+            knn_testing2(data= (hog_d,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2_hog')
 
+        if usobel:
+            print('-----------------------------------------USING sobel -------------------------------------------')
+
+            print(' ----------------------------------- Decision Tree Data set 1 --------------------------------------')
+            decision_tree_testing2(data= (sobel_img,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2_sobel')
+            print(' ----------------------------------- Neural Net Data set 1 --------------------------------------')
+            neural_net_testing2(data= (sobel_img,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2_sobel')
+            print(' ----------------------------------- BOOSTING Data set 1 --------------------------------------')
+            boosting_testing2(data= (sobel_img,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2_sobel')
+            print(' ----------------------------------- Super Vector Machine Data set 1 --------------------------------------')
+            svm_testing2(data= (sobel_img,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2_sobel')
+            print(' ----------------------------------- K Neighbors Data set 1 --------------------------------------')
+            knn_testing2(data= (sobel_img,label), csv_file=[], preprocess= [], nflag=1, foldername='coral_reef2_sobel')
+
+        print('DONE'*100)
+    if fix_data_split:
+        filename1 = './figures/coral_reef2/decision_tree_data_split1.pkl'
+        filename2 = './figures/coral_reef2_hog/decision_tree_data_split1.pkl'
+        filename3 = './figures/coral_reef2_sobel/decision_tree_data_split1.pkl'
+        # IGNORE FIRST LINE
+        ax1 = pickle.load(open(filename1, 'rb'))
+        ax2 = pickle.load(open(filename2, 'rb'))
+        ax3 = pickle.load(open(filename3, 'rb'))
+        blah = ax1.lines
+        blah.append(ax2.lines[1])
+        blah.append(ax3.lines[1])
+        fig,ax = plt.subplots()
+        colors = [{'c': 'red', 'linestyle': '-'},
+                 {'c': 'orange', 'linestyle': '-'},
+                 {'c': 'blue', 'linestyle': '-'},
+                 {'c': 'green', 'linestyle': '-'},
+                 {'c': 'black', 'linestyle': '-'},
+                 {'c': 'orange', 'linestyle': '-.'},
+                 {'c': 'blue', 'linestyle': '-.'},
+                 {'c': 'blue', 'linestyle': '--'},
+                 {'c': 'blue', 'linestyle': '-.'},
+                 {'c': 'green', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-'},
+                 {'c': 'green', 'linestyle': '-.'}]
+        for i in range(len(blah)):
+            ax.plot(blah[i]._x, blah[i]._y, **colors[i])
+        ax.set_title('decision tree with different preprocessing')
+        fig.legend(ax.get_lines(), ['training', 'normal', 'HOG', 'Sobel'], ncol=3, loc="upper center")
+        ax.set_xlabel('data_split')
+        ax.set_ylabel('accuracy %')
+        foldername = 'coral_reef2'
+        with open('./figures/' + foldername + '/compile_decision_tree_datasplit.pkl', 'wb') as fid:
+            pickle.dump(ax, fid)
+        fig.savefig('./figures/' + foldername + '/compile_decision_tree_datasplit.png')  # plt.show()
+        plt.close('all')
+    if fix_prune:
+        filename1 = './figures/coral_reef2/decision_tree_prune1.pkl'
+        filename2 = './figures/coral_reef2_hog/decision_tree_prune1.pkl'
+        filename3 = './figures/coral_reef2_sobel/decision_tree_prune1.pkl'
+        # IGNORE FIRST LINE
+        ax1 = pickle.load(open(filename1, 'rb'))
+        ax2 = pickle.load(open(filename2, 'rb'))
+        ax3 = pickle.load(open(filename3, 'rb'))
+        blah = ax1.lines
+        blah.append(ax2.lines[0])
+        blah.append(ax2.lines[1])
+        blah.append(ax3.lines[0])
+        blah.append(ax3.lines[1])
+        fig,ax = plt.subplots()
+        colors = [{'c': 'red', 'linestyle': '--'},
+                 {'c': 'orange', 'linestyle': '--'},
+                 {'c': 'blue', 'linestyle': '--'},
+                 {'c': 'red', 'linestyle': '-.'},
+                 {'c': 'orange', 'linestyle': '-.'},
+                 {'c': 'blue', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-.'},
+                 {'c': 'green', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-'},
+                 {'c': 'yellow', 'linestyle': '-.'}]
+        for i in range(len(blah)):
+            ax.plot(blah[i]._x, blah[i]._y, **colors[i])
+        ax.set_title('decision tree with different preprocessing')
+        fig.legend(ax.get_lines(), ['training_n', 'normal', 'training_h', 'HOG', 'training_s', 'Sobel'], ncol=3, loc="upper center")
+        ax.set_xlabel('max tree depth')
+        ax.set_ylabel('accuracy %')
+        foldername = 'coral_reef2'
+        with open('./figures/' + foldername + '/compile_decision_tree_prune.pkl', 'wb') as fid:
+            pickle.dump(ax, fid)
+        fig.savefig('./figures/' + foldername + '/compile_decision_tree_prune.png')  # plt.show()
+        plt.close('all')
+    if fix_nn_times:
+        filename1 = './figures/coral_reef2/nn_times.pkl'
+        filename2 = './figures/coral_reef2_hog/nn_times.pkl'
+        filename3 = './figures/coral_reef2_sobel/nn_times.pkl'
+        # IGNORE FIRST LINE
+        ax1 = pickle.load(open(filename1, 'rb'))
+        ax2 = pickle.load(open(filename2, 'rb'))
+        ax3 = pickle.load(open(filename3, 'rb'))
+        blah = ax1.lines
+        blah.append(ax2.lines[0])
+        blah.append(ax3.lines[0])
+        fig,ax = plt.subplots()
+        colors = [{'c': 'red', 'linestyle': '--'},
+                 {'c': 'orange', 'linestyle': '--'},
+                 {'c': 'blue', 'linestyle': '--'},
+                 {'c': 'red', 'linestyle': '-.'},
+                 {'c': 'orange', 'linestyle': '-.'},
+                 {'c': 'blue', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-.'},
+                 {'c': 'green', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-'},
+                 {'c': 'yellow', 'linestyle': '-.'}]
+        for i in range(len(blah)):
+            ax.plot(blah[i]._x, blah[i]._y, **colors[i])
+        xlabels = ["(100,)", "(200,)", "(400,)", "(800,)", "(1600,)"]
+        this_x = [0, 1, 2, 3, 4]
+        plt.xticks(this_x, xlabels)
+        ax.set_title('MLP training times')
+        fig.legend(ax.get_lines(), ['normal', 'HOG', 'Sobel'], ncol=3, loc="upper center")
+        ax.set_xlabel('iterations')
+        ax.set_ylabel('times(s)')
+        foldername = 'coral_reef2'
+        with open('./figures/' + foldername + '/compile_nn_times.pkl', 'wb') as fid:
+            pickle.dump(ax, fid)
+        fig.savefig('./figures/' + foldername + '/compile_nn_times.png')  # plt.show()
+        plt.close('all')
+
+    if fix_boost_prune:
+        filename1 = './figures/coral_reef2/boosting_prune_1.pkl'
+        filename2 = './figures/coral_reef2_hog/boosting_prune_1.pkl'
+        filename3 = './figures/coral_reef2_sobel/boosting_prune_1.pkl'
+        # IGNORE FIRST LINE
+        ax1 = pickle.load(open(filename1, 'rb'))
+        ax2 = pickle.load(open(filename2, 'rb'))
+        ax3 = pickle.load(open(filename3, 'rb'))
+        blah = ax1.lines
+        blah.append(ax2.lines[0])
+        blah.append(ax2.lines[1])
+        blah.append(ax3.lines[0])
+        blah.append(ax3.lines[1])
+        fig,ax = plt.subplots()
+        colors = [{'c': 'red', 'linestyle': '--'},
+                 {'c': 'red', 'linestyle': '-.'},
+                 {'c': 'blue', 'linestyle': '--'},
+                 {'c': 'blue', 'linestyle': '-.'},
+                 {'c': 'orange', 'linestyle': '--'},
+                 {'c': 'orange', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-.'},
+                 {'c': 'green', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-'},
+                 {'c': 'yellow', 'linestyle': '-.'}]
+        for i in range(len(blah)):
+            ax.plot(blah[i]._x, blah[i]._y, **colors[i])
+        ax.set_title('Boosting pruning')
+        fig.legend(ax.get_lines(), ['normal train', 'normal test', 'HOG train', 'HOG test', 'Sobel train', 'Sobel test'], ncol=3, loc="upper center")
+        ax.set_xlabel('tree max depth (pruning)')
+        ax.set_ylabel('% accurate')
+        foldername = 'coral_reef2'
+        with open('./figures/' + foldername + '/compile_boost_prune.pkl', 'wb') as fid:
+            pickle.dump(ax, fid)
+        fig.savefig('./figures/' + foldername + '/compile_boost_prune.png')  # plt.show()
+        plt.close('all')
+    if fix_boost_nest:
+        filename1 = './figures/coral_reef2/boosting_num_est_1.pkl'
+        filename2 = './figures/coral_reef2_hog/boosting_num_est_1.pkl'
+        filename3 = './figures/coral_reef2_sobel/boosting_num_est_1.pkl'
+        # IGNORE FIRST LINE
+        ax1 = pickle.load(open(filename1, 'rb'))
+        ax2 = pickle.load(open(filename2, 'rb'))
+        ax3 = pickle.load(open(filename3, 'rb'))
+        blah = ax1.lines
+        blah.append(ax2.lines[0])
+        blah.append(ax2.lines[1])
+        blah.append(ax3.lines[0])
+        blah.append(ax3.lines[1])
+        fig,ax = plt.subplots()
+        colors = [{'c': 'red', 'linestyle': '--'},
+                 {'c': 'red', 'linestyle': '-.'},
+                 {'c': 'blue', 'linestyle': '--'},
+                 {'c': 'blue', 'linestyle': '-.'},
+                 {'c': 'orange', 'linestyle': '--'},
+                 {'c': 'orange', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-.'},
+                 {'c': 'green', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-'},
+                 {'c': 'yellow', 'linestyle': '-.'}]
+        for i in range(len(blah)):
+            ax.plot(blah[i]._x, blah[i]._y, **colors[i])
+        ax.set_title('Boosting num_estimators')
+        fig.legend(ax.get_lines(), ['normal train', 'normal test', 'HOG train', 'HOG test', 'Sobel train', 'Sobel test'], ncol=3, loc="upper center")
+        ax.set_xlabel('num estimators')
+        ax.set_ylabel('% accurate')
+        foldername = 'coral_reef2'
+        with open('./figures/' + foldername + '/compile_boost_nest.pkl', 'wb') as fid:
+            pickle.dump(ax, fid)
+        fig.savefig('./figures/' + foldername + '/compile_boost_nest.png')  # plt.show()
+        plt.close('all')
+    if fix_boost_lr:
+        filename1 = './figures/coral_reef2/boosting_lr_1.pkl'
+        filename2 = './figures/coral_reef2_hog/boosting_lr_1.pkl'
+        filename3 = './figures/coral_reef2_sobel/boosting_lr_1.pkl'
+        # IGNORE FIRST LINE
+        ax1 = pickle.load(open(filename1, 'rb'))
+        ax2 = pickle.load(open(filename2, 'rb'))
+        ax3 = pickle.load(open(filename3, 'rb'))
+        blah = ax1.lines
+        blah.append(ax2.lines[0])
+        blah.append(ax2.lines[1])
+        blah.append(ax3.lines[0])
+        blah.append(ax3.lines[1])
+        fig,ax = plt.subplots()
+        colors = [{'c': 'red', 'linestyle': '--'},
+                 {'c': 'red', 'linestyle': '-.'},
+                 {'c': 'blue', 'linestyle': '--'},
+                 {'c': 'blue', 'linestyle': '-.'},
+                 {'c': 'orange', 'linestyle': '--'},
+                 {'c': 'orange', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-.'},
+                 {'c': 'green', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-'},
+                 {'c': 'yellow', 'linestyle': '-.'}]
+        for i in range(len(blah)):
+            ax.plot(blah[i]._x, blah[i]._y, **colors[i])
+        ax.set_title('Boosting learn rate')
+        fig.legend(ax.get_lines(), ['normal train', 'normal test', 'HOG train', 'HOG test', 'Sobel train', 'Sobel test'], ncol=3, loc="upper center")
+        ax.set_xlabel('learn rate (10^-n)')
+        ax.set_ylabel('% accurate')
+        foldername = 'coral_reef2'
+        with open('./figures/' + foldername + '/compile_boost_lr.pkl', 'wb') as fid:
+            pickle.dump(ax, fid)
+        fig.savefig('./figures/' + foldername + '/compile_boost_lr.png')  # plt.show()
+        plt.close('all')
+    if fix_svm_kernel:
+        filename1 = './figures/coral_reef2/svn_kernels_1.pkl'
+        filename2 = './figures/coral_reef2_hog/svn_kernels_1.pkl'
+        filename3 = './figures/coral_reef2_sobel/svn_kernels_1.pkl'
+        # IGNORE FIRST LINE
+        ax1 = pickle.load(open(filename1, 'rb'))
+        ax2 = pickle.load(open(filename2, 'rb'))
+        ax3 = pickle.load(open(filename3, 'rb'))
+        blah = ax1.lines
+        blah.append(ax2.lines[0])
+        blah.append(ax2.lines[1])
+        blah.append(ax3.lines[0])
+        blah.append(ax3.lines[1])
+        fig,ax = plt.subplots()
+        colors = [{'c': 'red', 'linestyle': '--'},
+                 {'c': 'red', 'linestyle': '-.'},
+                 {'c': 'blue', 'linestyle': '--'},
+                 {'c': 'blue', 'linestyle': '-.'},
+                 {'c': 'orange', 'linestyle': '--'},
+                 {'c': 'orange', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-.'},
+                 {'c': 'green', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-'},
+                 {'c': 'yellow', 'linestyle': '-.'}]
+        for i in range(len(blah)):
+            ax.plot(blah[i]._x, blah[i]._y, **colors[i])
+
+        xlabels = ["poly deg 2", "poly deg 5", "poly deg 8", "gaussian", "sigmoid"]
+        this_x = [0, 1, 2, 3, 4]
+        plt.xticks(this_x, xlabels)
+        ax.set_title('SVM kernel exploration')
+        fig.legend(ax.get_lines(), ['normal train', 'normal test', 'HOG train', 'HOG test', 'Sobel train', 'Sobel test'], ncol=3, loc="upper center")
+        ax.set_xlabel('kernel used')
+        ax.set_ylabel('% accurate')
+        foldername = 'coral_reef2'
+        with open('./figures/' + foldername + '/compile_svm_kernel_1.pkl', 'wb') as fid:
+            pickle.dump(ax, fid)
+        fig.savefig('./figures/' + foldername + '/compile_svm_kernel_1.png')  # plt.show()
+        plt.close('all')
+    if fix_knn:
+        filename1 = './figures/coral_reef2/knn_num_neighbors_1.pkl'
+        filename2 = './figures/coral_reef2_hog/knn_num_neighbors_1.pkl'
+        filename3 = './figures/coral_reef2_sobel/knn_num_neighbors_1.pkl'
+        # IGNORE FIRST LINE
+        ax1 = pickle.load(open(filename1, 'rb'))
+        ax2 = pickle.load(open(filename2, 'rb'))
+        ax3 = pickle.load(open(filename3, 'rb'))
+        blah = ax1.lines
+        blah.append(ax2.lines[0])
+        blah.append(ax2.lines[1])
+        blah.append(ax3.lines[0])
+        blah.append(ax3.lines[1])
+        fig,ax = plt.subplots()
+        colors = [{'c': 'red', 'linestyle': '--'},
+                 {'c': 'red', 'linestyle': '-.'},
+                 {'c': 'blue', 'linestyle': '--'},
+                 {'c': 'blue', 'linestyle': '-.'},
+                 {'c': 'orange', 'linestyle': '--'},
+                 {'c': 'orange', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '-.'},
+                 {'c': 'black', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-.'},
+                 {'c': 'green', 'linestyle': '--'},
+                 {'c': 'green', 'linestyle': '-'},
+                 {'c': 'yellow', 'linestyle': '-.'}]
+        for i in range(len(blah)):
+            ax.plot(blah[i]._x, blah[i]._y, **colors[i])
+
+        xlabels = ["k=3", "k=5", "k=7", "k=9", "k=11"]
+        this_x = [0, 1, 2, 3, 4]
+        plt.xticks(this_x, xlabels)
+        ax.set_title('KNN Neighbors exploration')
+        fig.legend(ax.get_lines(), ['normal train', 'normal test', 'HOG train', 'HOG test', 'Sobel train', 'Sobel test'], ncol=3, loc="upper center")
+        ax.set_xlabel('k (num of neighbors)')
+        ax.set_ylabel('% accurate')
+        foldername = 'coral_reef2'
+        with open('./figures/' + foldername + '/compile_knn_1.pkl', 'wb') as fid:
+            pickle.dump(ax, fid)
+        fig.savefig('./figures/' + foldername + '/compile_knn_1.png')  # plt.show()
+        plt.close('all')
 
 
 if __name__ == "__main__":
