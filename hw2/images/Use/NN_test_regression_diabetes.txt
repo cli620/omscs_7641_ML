@@ -1,0 +1,39 @@
+RHC test classification report = 
+               precision    recall  f1-score   support
+
+           0       0.70      0.78      0.74        64
+           1       0.58      0.47      0.52        40
+
+    accuracy                           0.66       104
+   macro avg       0.64      0.63      0.63       104
+weighted avg       0.65      0.66      0.66       104
+
+SA test classification report = 
+               precision    recall  f1-score   support
+
+           0       0.70      0.78      0.74        64
+           1       0.58      0.47      0.52        40
+
+    accuracy                           0.66       104
+   macro avg       0.64      0.63      0.63       104
+weighted avg       0.65      0.66      0.66       104
+
+GA test classification report = 
+               precision    recall  f1-score   support
+
+           0       0.92      0.88      0.90        64
+           1       0.81      0.88      0.84        40
+
+    accuracy                           0.88       104
+   macro avg       0.87      0.88      0.87       104
+weighted avg       0.88      0.88      0.88       104
+
+GD test classification report = 
+               precision    recall  f1-score   support
+
+           0       0.97      0.98      0.98        64
+           1       0.97      0.95      0.96        40
+
+    accuracy                           0.97       104
+   macro avg       0.97      0.97      0.97       104
+weighted avg       0.97      0.97      0.97       104
