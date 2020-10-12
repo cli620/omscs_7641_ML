@@ -177,6 +177,15 @@ def test_nn_performances(x_train, x_test, y_train, y_test, random_seed, **kwargs
                           pop_size=kwargs['pop_size'], mutation_prob=kwargs['mutation_prob'],
                           max_attempts=kwargs['max_iters'], random_state=random_seed, curve=False)
 
+    # # Define Neural Network using mimic for weights optimization
+    # mimic_nn = NeuralNetwork(hidden_nodes=[50, 30], activation='relu',
+    #                       algorithm='mimic', max_iters=kwargs['max_iters'],
+    #                       bias=True, is_classifier=True, learning_rate=0.001,
+    #                       early_stopping=False, clip_max=1e10,
+    #                       pop_size=kwargs['pop_size'], mutation_prob=kwargs['mutation_prob'],
+    #                       max_attempts=kwargs['max_iters'], random_state=random_seed, curve=False)
+
+
     # Define Neural Network using GD for weights optimization
     gd_nn = NeuralNetwork(hidden_nodes=[50, 30], activation='relu',
                           algorithm='gradient_descent', max_iters=kwargs['max_iters'],
@@ -185,6 +194,7 @@ def test_nn_performances(x_train, x_test, y_train, y_test, random_seed, **kwargs
                           max_attempts=kwargs['max_iters'], random_state=random_seed, curve=False)
 
     # Fit each of the Neural Networks using the different optimization algorithms
+    # mimic_nn.fit(x_train, y_train)
     rhc_nn.fit(x_train, y_train)
     sa_nn.fit(x_train, y_train)
     ga_nn.fit(x_train, y_train)
@@ -194,6 +204,7 @@ def test_nn_performances(x_train, x_test, y_train, y_test, random_seed, **kwargs
     # right now outputs F1 score --> 2*precision*recall/(precision+recall)
 
     # Print classification reports for all of the optimization algorithms
+    # print('MIMIC test classification report = \n {}'.format(classification_report(y_test, mimic_nn.predict(x_test))))
     print('RHC test classification report = \n {}'.format(classification_report(y_test, rhc_nn.predict(x_test))))
     print('SA test classification report = \n {}'.format(classification_report(y_test, sa_nn.predict(x_test))))
     print('GA test classification report = \n {}'.format(classification_report(y_test, ga_nn.predict(x_test))))

@@ -277,12 +277,12 @@ def neural_network(x_train, x_test, y_train, y_test, random_seeds):
     iterations = np.array([i for i in range(1, 10)] + [10 * i for i in range(1, 20, 2)])
 
     # Plot performances for RHC, SA, GA and GD with Neural Networks
-    # nn.plot_nn_performances(x_train, y_train,
-    #                         random_seeds=random_seeds,
-    #                         rhc_max_iters=iterations, sa_max_iters=iterations,
-    #                         ga_max_iters=iterations, gd_max_iters=iterations,
-    #                         init_temp=100, exp_decay_rate=0.1, min_temp=0.001,
-    #                         pop_size=100, mutation_prob=0.2)
+    nn.plot_nn_performances(x_train, y_train,
+                            random_seeds=random_seeds,
+                            rhc_max_iters=iterations, sa_max_iters=iterations,
+                            ga_max_iters=iterations, gd_max_iters=iterations, #mimic_max_iters=iterations,
+                            init_temp=100, exp_decay_rate=0.1, min_temp=0.001,
+                            pop_size=100, mutation_prob=0.2)
 
     # Test performances for RHC, SA, GA and GD with Neural Networks
     nn.test_nn_performances(x_train, x_test, y_train, y_test,
@@ -309,11 +309,11 @@ if __name__ == "__main__":
               (7.573, 3.716), (7.265, 1.268), (6.898, 1.885),
               (1.112, 2.049), (5.468, 2.606), (5.989, 2.873)]
     # Experiment the Travel Salesman Problem, Flip Flop and Four Peaks with RHC, SA, GA and MIMIC
-    # travel_salesman(length=12, coords=coords, random_seeds=random_seeds)
+    travel_salesman(length=12, coords=coords, random_seeds=random_seeds)
 
     four_peaks(length=100, random_seeds=random_seeds)
-    #
-    # max_color(length=100, edges=edges, random_seeds=random_seeds)
+
+    max_color(length=100, edges=edges, random_seeds=random_seeds)
 
     # queens(length=100, random_seeds=random_seeds)
 

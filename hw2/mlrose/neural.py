@@ -465,7 +465,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
                     'relu', 'sigmoid' or 'tanh'.""")
 
         if self.algorithm not in ['random_hill_climb', 'simulated_annealing',
-                                  'genetic_alg', 'gradient_descent']:
+                                  'genetic_alg', 'gradient_descent', 'mimic']:
             raise Exception("""Algorithm must be one of: 'random_hill_climb',
                     'simulated_annealing', 'genetic_alg',
                     'gradient_descent'.""")

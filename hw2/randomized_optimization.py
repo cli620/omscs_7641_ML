@@ -181,8 +181,8 @@ def plot_optimizations(problem, random_seeds, **kwargs):
        Returns:
         None.
        """
-    plot_sa_optimization(problem, random_seeds, **kwargs)
-    plot_ga_mimic_optimization(problem, 'pop_size', random_seeds, **kwargs)
+    # plot_sa_optimization(problem, random_seeds, **kwargs)
+    # plot_ga_mimic_optimization(problem, 'pop_size', random_seeds, **kwargs)
     plot_ga_mimic_optimization(problem, 'keep_pct', random_seeds, **kwargs)
 
 
