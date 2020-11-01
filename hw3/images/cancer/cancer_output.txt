@@ -1,0 +1,525 @@
+--------------------------
+Total dataset size:
+Number of instances: 569
+Number of features: 30
+Training Set : (455, 30)
+Testing Set : (114, 30)
+--------------------------
+kMeans
+Train on training set with k=2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.523	0.550	0.536	0.647	0.535	0.347
+Benchmark Model with k = n classes = 2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.523	0.550	0.536	0.647	0.535	0.347
+Plot Model Complexity
+k = 1 -->  inertia = 13650.000
+k = 2 -->  inertia = 9298.117
+k = 3 -->  inertia = 8154.404
+k = 4 -->  inertia = 7498.394
+k = 5 -->  inertia = 7004.326
+k = 6 -->  inertia = 6389.491
+k = 7 -->  inertia = 6046.626
+k = 8 -->  inertia = 5707.054
+k = 9 -->  inertia = 5439.354
+k = 10 -->  inertia = 5265.137
+k = 11 -->  inertia = 5068.390
+--------------------------
+GMM
+Train on training set with k=10
+homo	compl	v-meas	ARI	AMI	silhouette
+0.696	0.203	0.315	0.142	0.310	0.029
+Benchmark Model with k = n classes = 2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.530	0.533	0.531	0.655	0.530	0.324
+Plot Model Complexity
+cv = spherical, k = 2 --> aic = 32402.216, bic = 32661.794
+cv = spherical, k = 3 --> aic = 30830.521, bic = 31221.950
+cv = spherical, k = 4 --> aic = 29349.481, bic = 29872.759
+cv = spherical, k = 5 --> aic = 28367.697, bic = 29022.825
+cv = spherical, k = 6 --> aic = 27621.259, bic = 28408.235
+cv = spherical, k = 7 --> aic = 26948.641, bic = 27867.467
+cv = spherical, k = 8 --> aic = 26461.059, bic = 27511.735
+cv = spherical, k = 9 --> aic = 26033.944, bic = 27216.470
+cv = spherical, k = 10 --> aic = 25718.746, bic = 27033.120
+cv = tied, k = 2 --> aic = 7447.419, bic = 9614.695
+cv = tied, k = 3 --> aic = 7509.157, bic = 9804.163
+cv = tied, k = 4 --> aic = 7571.004, bic = 9993.739
+cv = tied, k = 5 --> aic = 7633.026, bic = 10183.490
+cv = tied, k = 6 --> aic = 7693.948, bic = 10372.141
+cv = tied, k = 7 --> aic = 7756.529, bic = 10562.451
+cv = tied, k = 8 --> aic = 6063.803, bic = 8997.455
+cv = tied, k = 9 --> aic = 7880.516, bic = 10941.897
+cv = tied, k = 10 --> aic = 7942.548, bic = 11131.659
+cv = diag, k = 2 --> aic = 29889.286, bic = 30387.842
+cv = diag, k = 3 --> aic = 28035.684, bic = 28785.578
+cv = diag, k = 4 --> aic = 26143.804, bic = 27145.036
+cv = diag, k = 5 --> aic = 24515.570, bic = 25768.141
+cv = diag, k = 6 --> aic = 23630.685, bic = 25134.594
+cv = diag, k = 7 --> aic = 22671.198, bic = 24426.445
+cv = diag, k = 8 --> aic = 21968.410, bic = 23974.994
+cv = diag, k = 9 --> aic = 21314.974, bic = 23572.897
+cv = diag, k = 10 --> aic = 20897.154, bic = 23406.415
+cv = full, k = 2 --> aic = 1215.877, bic = 5299.092
+cv = full, k = 3 --> aic = 702.513, bic = 6829.395
+cv = full, k = 4 --> aic = 310.701, bic = 8481.251
+cv = full, k = 5 --> aic = -956.838, bic = 9257.380
+cv = full, k = 6 --> aic = -2367.400, bic = 9890.485
+cv = full, k = 7 --> aic = -5943.987, bic = 8357.566
+cv = full, k = 8 --> aic = -5531.269, bic = 10813.951
+cv = full, k = 9 --> aic = -8751.196, bic = 9637.691
+cv = full, k = 10 --> aic = -11394.138, bic = 9038.417
+--------------------------
+PCA
+--------------------------
+Train on training set
+Reconstruction error = 0.004
+Plot Model Complexity
+Explained variance [n components = 20]= 0.998
+--------------------------
+kMeans
+Train on training set with k=2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.523	0.550	0.536	0.647	0.535	0.348
+Benchmark Model with k = n classes = 2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.523	0.550	0.536	0.647	0.535	0.348
+Plot Model Complexity
+k = 1 -->  inertia = 13590.825
+k = 2 -->  inertia = 9239.013
+k = 3 -->  inertia = 8095.458
+k = 4 -->  inertia = 7439.617
+k = 5 -->  inertia = 6852.052
+k = 6 -->  inertia = 6331.043
+k = 7 -->  inertia = 5986.505
+k = 8 -->  inertia = 5685.661
+k = 9 -->  inertia = 5416.333
+k = 10 -->  inertia = 5201.928
+k = 11 -->  inertia = 5007.909
+--------------------------
+GMM
+Train on training set with k=6
+homo	compl	v-meas	ARI	AMI	silhouette
+0.230	0.104	0.143	0.209	0.138	0.099
+Benchmark Model with k = n classes = 2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.068	0.080	0.073	0.129	0.072	0.275
+Plot Model Complexity
+cv = spherical, k = 2 --> aic = 25428.169, bic = 25605.342
+cv = spherical, k = 3 --> aic = 24458.174, bic = 24725.994
+cv = spherical, k = 4 --> aic = 23574.283, bic = 23932.748
+cv = spherical, k = 5 --> aic = 22983.460, bic = 23432.572
+cv = spherical, k = 6 --> aic = 22548.942, bic = 23088.701
+cv = spherical, k = 7 --> aic = 22133.487, bic = 22763.892
+cv = spherical, k = 8 --> aic = 21841.524, bic = 22562.576
+cv = spherical, k = 9 --> aic = 21583.931, bic = 22395.629
+cv = spherical, k = 10 --> aic = 21370.334, bic = 22272.679
+cv = tied, k = 2 --> aic = 17681.119, bic = 18715.314
+cv = tied, k = 3 --> aic = 17722.983, bic = 18843.704
+cv = tied, k = 4 --> aic = 17764.989, bic = 18972.236
+cv = tied, k = 5 --> aic = 17806.874, bic = 19100.647
+cv = tied, k = 6 --> aic = 17847.984, bic = 19228.284
+cv = tied, k = 7 --> aic = 17890.361, bic = 19357.187
+cv = tied, k = 8 --> aic = 17930.942, bic = 19484.294
+cv = tied, k = 9 --> aic = 17974.675, bic = 19614.554
+cv = tied, k = 10 --> aic = 18016.394, bic = 19742.798
+cv = diag, k = 2 --> aic = 15277.211, bic = 15610.955
+cv = diag, k = 3 --> aic = 14782.121, bic = 15284.797
+cv = diag, k = 4 --> aic = 14619.853, bic = 15291.462
+cv = diag, k = 5 --> aic = 14489.710, bic = 15330.251
+cv = diag, k = 6 --> aic = 14389.308, bic = 15398.781
+cv = diag, k = 7 --> aic = 14303.898, bic = 15482.303
+cv = diag, k = 8 --> aic = 14277.864, bic = 15625.201
+cv = diag, k = 9 --> aic = 14234.615, bic = 15750.884
+cv = diag, k = 10 --> aic = 14144.306, bic = 15829.508
+cv = full, k = 2 --> aic = 14244.875, bic = 16144.332
+cv = full, k = 3 --> aic = 13213.734, bic = 16064.980
+cv = full, k = 4 --> aic = 12651.175, bic = 16454.210
+cv = full, k = 5 --> aic = 11918.714, bic = 16673.537
+cv = full, k = 6 --> aic = 11582.655, bic = 17289.266
+cv = full, k = 7 --> aic = 10605.975, bic = 17264.376
+cv = full, k = 8 --> aic = 10848.852, bic = 18459.041
+cv = full, k = 9 --> aic = 9572.872, bic = 18134.850
+cv = full, k = 10 --> aic = 8666.147, bic = 18179.913
+--------------------------
+ICA
+--------------------------
+Train on training set
+Reconstruction error = 0.004
+Plot Model Complexity
+k = 1 --> average kurtosis = 2.252
+k = 2 --> average kurtosis = 1.727
+k = 3 --> average kurtosis = 1.967
+k = 4 --> average kurtosis = 3.702
+k = 5 --> average kurtosis = 3.921
+k = 6 --> average kurtosis = 4.942
+k = 7 --> average kurtosis = 4.401
+k = 8 --> average kurtosis = 4.764
+k = 9 --> average kurtosis = 4.784
+k = 10 --> average kurtosis = 4.643
+k = 11 --> average kurtosis = 4.544
+k = 12 --> average kurtosis = 7.029
+k = 13 --> average kurtosis = 5.118
+k = 14 --> average kurtosis = 5.407
+k = 15 --> average kurtosis = 5.257
+k = 16 --> average kurtosis = 5.573
+k = 17 --> average kurtosis = 4.957
+k = 18 --> average kurtosis = 4.464
+k = 19 --> average kurtosis = 4.983
+k = 20 --> average kurtosis = 4.196
+k = 21 --> average kurtosis = 4.863
+k = 22 --> average kurtosis = 4.808
+k = 23 --> average kurtosis = 4.591
+k = 24 --> average kurtosis = 4.608
+k = 25 --> average kurtosis = 5.558
+k = 26 --> average kurtosis = 3.955
+k = 27 --> average kurtosis = 4.596
+k = 28 --> average kurtosis = 5.189
+k = 29 --> average kurtosis = 5.869
+k = 30 --> average kurtosis = 9.545
+--------------------------
+kMeans
+Train on training set with k=2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.243	0.364	0.291	0.287	0.290	0.144
+Benchmark Model with k = n classes = 2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.243	0.364	0.291	0.287	0.290	0.144
+Plot Model Complexity
+k = 1 -->  inertia = 20.000
+k = 2 -->  inertia = 19.268
+k = 3 -->  inertia = 18.478
+k = 4 -->  inertia = 17.919
+k = 5 -->  inertia = 17.322
+k = 6 -->  inertia = 16.858
+k = 7 -->  inertia = 16.422
+k = 8 -->  inertia = 15.711
+k = 9 -->  inertia = 15.296
+k = 10 -->  inertia = 14.892
+k = 11 -->  inertia = 14.606
+--------------------------
+GMM
+Train on training set with k=10
+homo	compl	v-meas	ARI	AMI	silhouette
+0.407	0.131	0.198	0.159	0.192	-0.032
+Benchmark Model with k = n classes = 2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.121	0.142	0.130	0.201	0.129	0.224
+Plot Model Complexity
+cv = spherical, k = 2 --> aic = -31699.855, bic = -31522.682
+cv = spherical, k = 3 --> aic = -32170.927, bic = -31903.107
+cv = spherical, k = 4 --> aic = -32271.079, bic = -31912.613
+cv = spherical, k = 5 --> aic = -32371.500, bic = -31922.387
+cv = spherical, k = 6 --> aic = -32464.835, bic = -31925.076
+cv = spherical, k = 7 --> aic = -32521.878, bic = -31891.472
+cv = spherical, k = 8 --> aic = -32560.108, bic = -31839.056
+cv = spherical, k = 9 --> aic = -32636.304, bic = -31824.605
+cv = spherical, k = 10 --> aic = -32664.647, bic = -31762.302
+cv = tied, k = 2 --> aic = -29368.003, bic = -28333.808
+cv = tied, k = 3 --> aic = -29326.139, bic = -28205.418
+cv = tied, k = 4 --> aic = -29284.132, bic = -28076.885
+cv = tied, k = 5 --> aic = -29242.247, bic = -27948.473
+cv = tied, k = 6 --> aic = -29201.134, bic = -27820.834
+cv = tied, k = 7 --> aic = -29158.757, bic = -27691.932
+cv = tied, k = 8 --> aic = -29118.172, bic = -27564.820
+cv = tied, k = 9 --> aic = -29074.444, bic = -27434.566
+cv = tied, k = 10 --> aic = -29032.724, bic = -27306.320
+cv = diag, k = 2 --> aic = -32566.469, bic = -32232.725
+cv = diag, k = 3 --> aic = -33219.618, bic = -32716.941
+cv = diag, k = 4 --> aic = -33530.135, bic = -32858.526
+cv = diag, k = 5 --> aic = -33841.875, bic = -33001.334
+cv = diag, k = 6 --> aic = -33972.136, bic = -32962.663
+cv = diag, k = 7 --> aic = -34075.675, bic = -32897.270
+cv = diag, k = 8 --> aic = -34144.275, bic = -32796.937
+cv = diag, k = 9 --> aic = -34165.041, bic = -32648.771
+cv = diag, k = 10 --> aic = -34242.318, bic = -32557.116
+cv = full, k = 2 --> aic = -32799.080, bic = -30899.623
+cv = full, k = 3 --> aic = -33834.041, bic = -30982.795
+cv = full, k = 4 --> aic = -34381.056, bic = -30578.021
+cv = full, k = 5 --> aic = -35050.068, bic = -30295.245
+cv = full, k = 6 --> aic = -34997.456, bic = -29290.844
+cv = full, k = 7 --> aic = -35671.811, bic = -29013.410
+cv = full, k = 8 --> aic = -35571.463, bic = -27961.274
+cv = full, k = 9 --> aic = -36242.337, bic = -27680.359
+cv = full, k = 10 --> aic = -36667.455, bic = -27153.689
+--------------------------
+KPCA
+--------------------------
+Train on training set
+Reconstruction error = 0.180
+Plot Model Complexity
+Kernel = rbf - Explained variance [n components = 20]= 0.915
+Kernel = poly - Explained variance [n components = 20]= 0.969
+Kernel = sigmoid - Explained variance [n components = 20]= 0.973
+Kernel = cosine - Explained variance [n components = 20]= 0.996
+--------------------------
+kMeans
+Train on training set with k=2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.556	0.554	0.555	0.677	0.554	0.304
+Benchmark Model with k = n classes = 2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.556	0.554	0.555	0.677	0.554	0.304
+Plot Model Complexity
+k = 1 -->  inertia = 443.545
+k = 2 -->  inertia = 300.779
+k = 3 -->  inertia = 261.457
+k = 4 -->  inertia = 234.861
+k = 5 -->  inertia = 215.093
+k = 6 -->  inertia = 202.851
+k = 7 -->  inertia = 190.868
+k = 8 -->  inertia = 183.143
+k = 9 -->  inertia = 176.466
+k = 10 -->  inertia = 171.384
+k = 11 -->  inertia = 165.944
+--------------------------
+GMM
+Train on training set with k=3
+homo	compl	v-meas	ARI	AMI	silhouette
+0.470	0.283	0.354	0.333	0.352	0.140
+Benchmark Model with k = n classes = 2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.088	0.084	0.086	0.088	0.085	0.091
+Plot Model Complexity
+cv = spherical, k = 2 --> aic = -4527.014, bic = -4349.842
+cv = spherical, k = 3 --> aic = -5540.168, bic = -5272.348
+cv = spherical, k = 4 --> aic = -6309.599, bic = -5951.133
+cv = spherical, k = 5 --> aic = -6884.315, bic = -6435.202
+cv = spherical, k = 6 --> aic = -7277.411, bic = -6737.652
+cv = spherical, k = 7 --> aic = -7631.820, bic = -7001.414
+cv = spherical, k = 8 --> aic = -7883.159, bic = -7162.106
+cv = spherical, k = 9 --> aic = -8061.499, bic = -7249.801
+cv = spherical, k = 10 --> aic = -8244.692, bic = -7342.347
+cv = tied, k = 2 --> aic = -12905.407, bic = -11871.212
+cv = tied, k = 3 --> aic = -12863.433, bic = -11742.712
+cv = tied, k = 4 --> aic = -12821.444, bic = -11614.197
+cv = tied, k = 5 --> aic = -12779.443, bic = -11485.670
+cv = tied, k = 6 --> aic = -12737.488, bic = -11357.188
+cv = tied, k = 7 --> aic = -12695.434, bic = -11228.608
+cv = tied, k = 8 --> aic = -12653.462, bic = -11100.110
+cv = tied, k = 9 --> aic = -12611.448, bic = -10971.569
+cv = tied, k = 10 --> aic = -12569.484, bic = -10843.080
+cv = diag, k = 2 --> aic = -13756.148, bic = -13422.404
+cv = diag, k = 3 --> aic = -14263.677, bic = -13761.001
+cv = diag, k = 4 --> aic = -14396.847, bic = -13725.238
+cv = diag, k = 5 --> aic = -14527.343, bic = -13686.803
+cv = diag, k = 6 --> aic = -14550.224, bic = -13540.752
+cv = diag, k = 7 --> aic = -14672.920, bic = -13494.515
+cv = diag, k = 8 --> aic = -14723.161, bic = -13375.824
+cv = diag, k = 9 --> aic = -14764.254, bic = -13247.984
+cv = diag, k = 10 --> aic = -14843.373, bic = -13158.171
+cv = full, k = 2 --> aic = -14251.057, bic = -12351.600
+cv = full, k = 3 --> aic = -14962.199, bic = -12110.954
+cv = full, k = 4 --> aic = -15253.611, bic = -11450.576
+cv = full, k = 5 --> aic = -14980.564, bic = -10225.741
+cv = full, k = 6 --> aic = -14957.514, bic = -9250.902
+cv = full, k = 7 --> aic = -15098.417, bic = -8440.016
+cv = full, k = 8 --> aic = -14828.366, bic = -7218.177
+cv = full, k = 9 --> aic = -15153.061, bic = -6591.083
+cv = full, k = 10 --> aic = -15455.013, bic = -5941.246
+--------------------------
+RP
+--------------------------
+Train on training set
+Reconstruction error = 0.312 with std = 0.057
+Plot Model Complexity
+Random run 1
+Random run 2
+Random run 3
+Random run 4
+Random run 5
+Random run 6
+Random run 7
+Random run 8
+Random run 9
+Random run 10
+k = [2, ..., 30] --> 
+Reconstruction errors = [0.96 0.94 0.91 0.88 0.84 0.78 0.78 0.73 0.68 0.67 0.62 0.6  0.56 0.53
+ 0.5  0.49 0.42 0.38 0.35 0.31 0.29 0.24 0.21 0.18 0.16 0.14 0.1  0.07
+ 0.04 0.01]
+--------------------------
+kMeans
+Train on training set with k=2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.351	0.375	0.363	0.473	0.362	0.396
+Benchmark Model with k = n classes = 2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.351	0.375	0.363	0.473	0.362	0.396
+Plot Model Complexity
+k = 1 -->  inertia = 1854.395
+k = 2 -->  inertia = 1133.717
+k = 3 -->  inertia = 950.275
+k = 4 -->  inertia = 810.231
+k = 5 -->  inertia = 748.472
+k = 6 -->  inertia = 692.211
+k = 7 -->  inertia = 652.952
+k = 8 -->  inertia = 621.048
+k = 9 -->  inertia = 591.277
+k = 10 -->  inertia = 565.496
+k = 11 -->  inertia = 543.354
+--------------------------
+GMM
+Train on training set with k=2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.086	0.104	0.094	-0.003	0.092	0.025
+Benchmark Model with k = n classes = 2
+homo	compl	v-meas	ARI	AMI	silhouette
+0.086	0.104	0.094	-0.003	0.092	0.025
+Plot Model Complexity
+cv = spherical, k = 2 --> aic = 6234.682, bic = 6411.855
+cv = spherical, k = 3 --> aic = 4948.203, bic = 5216.022
+cv = spherical, k = 4 --> aic = 3724.001, bic = 4082.467
+cv = spherical, k = 5 --> aic = 3127.035, bic = 3576.147
+cv = spherical, k = 6 --> aic = 2565.350, bic = 3105.109
+cv = spherical, k = 7 --> aic = 2152.567, bic = 2782.972
+cv = spherical, k = 8 --> aic = 1703.237, bic = 2424.289
+cv = spherical, k = 9 --> aic = 1423.696, bic = 2235.395
+cv = spherical, k = 10 --> aic = 1126.558, bic = 2028.903
+cv = tied, k = 2 --> aic = -9531.488, bic = -8497.293
+cv = tied, k = 3 --> aic = -9489.695, bic = -8368.974
+cv = tied, k = 4 --> aic = -9447.695, bic = -8240.448
+cv = tied, k = 5 --> aic = -9405.772, bic = -8111.999
+cv = tied, k = 6 --> aic = -9364.312, bic = -7984.012
+cv = tied, k = 7 --> aic = -9321.984, bic = -7855.158
+cv = tied, k = 8 --> aic = -9280.248, bic = -7726.896
+cv = tied, k = 9 --> aic = -9237.824, bic = -7597.945
+cv = tied, k = 10 --> aic = -9195.764, bic = -7469.359
+cv = diag, k = 2 --> aic = 4552.841, bic = 4886.586
+cv = diag, k = 3 --> aic = 3425.915, bic = 3928.591
+cv = diag, k = 4 --> aic = 2383.823, bic = 3055.432
+cv = diag, k = 5 --> aic = 1851.374, bic = 2691.915
+cv = diag, k = 6 --> aic = 1344.417, bic = 2353.889
+cv = diag, k = 7 --> aic = 984.017, bic = 2162.422
+cv = diag, k = 8 --> aic = 704.406, bic = 2051.744
+cv = diag, k = 9 --> aic = 413.961, bic = 1930.231
+cv = diag, k = 10 --> aic = 133.650, bic = 1818.851
+cv = full, k = 2 --> aic = -13027.571, bic = -11128.114
+cv = full, k = 3 --> aic = -13859.011, bic = -11007.765
+cv = full, k = 4 --> aic = -14422.468, bic = -10619.433
+cv = full, k = 5 --> aic = -14855.617, bic = -10100.794
+cv = full, k = 6 --> aic = -14894.524, bic = -9187.912
+cv = full, k = 7 --> aic = -15484.346, bic = -8825.945
+cv = full, k = 8 --> aic = -15562.375, bic = -7952.186
+cv = full, k = 9 --> aic = -16341.342, bic = -7779.364
+cv = full, k = 10 --> aic = -17074.244, bic = -7560.478
+--------------------------
+NN
+--------------------------
+C:\Users\cli09\Miniconda3\envs\ml7641_env37\lib\site-packages\sklearn\neural_network\multilayer_perceptron.py:566: ConvergenceWarning: Stochastic Optimizer: Maximum iterations (100) reached and the optimization hasn't converged yet.
+  % self.max_iter, ConvergenceWarning)
+Fitting Training Set: 0.8029 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.98      0.95      0.96        42
+           1       0.97      0.99      0.98        72
+    accuracy                           0.97       114
+   macro avg       0.97      0.97      0.97       114
+weighted avg       0.97      0.97      0.97       114
+Confusion Matrix:
+[[40  2]
+ [ 1 71]]
+--------------------------
+PCA + NN
+--------------------------
+C:\Users\cli09\Miniconda3\envs\ml7641_env37\lib\site-packages\sklearn\neural_network\multilayer_perceptron.py:566: ConvergenceWarning: Stochastic Optimizer: Maximum iterations (100) reached and the optimization hasn't converged yet.
+  % self.max_iter, ConvergenceWarning)
+Fitting Training Set: 0.7809 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.98      0.98      0.98        42
+           1       0.99      0.99      0.99        72
+    accuracy                           0.98       114
+   macro avg       0.98      0.98      0.98       114
+weighted avg       0.98      0.98      0.98       114
+Confusion Matrix:
+[[41  1]
+ [ 1 71]]
+--------------------------
+ICA + NN
+--------------------------
+C:\Users\cli09\Miniconda3\envs\ml7641_env37\lib\site-packages\sklearn\neural_network\multilayer_perceptron.py:566: ConvergenceWarning: Stochastic Optimizer: Maximum iterations (100) reached and the optimization hasn't converged yet.
+  % self.max_iter, ConvergenceWarning)
+C:\Users\cli09\Miniconda3\envs\ml7641_env37\lib\site-packages\sklearn\metrics\classification.py:1437: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+Fitting Training Set: 0.7101 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.00      0.00      0.00        42
+           1       0.63      1.00      0.77        72
+    accuracy                           0.63       114
+   macro avg       0.32      0.50      0.39       114
+weighted avg       0.40      0.63      0.49       114
+Confusion Matrix:
+[[ 0 42]
+ [ 0 72]]
+--------------------------
+KPCA + NN
+--------------------------
+C:\Users\cli09\Miniconda3\envs\ml7641_env37\lib\site-packages\sklearn\neural_network\multilayer_perceptron.py:566: ConvergenceWarning: Stochastic Optimizer: Maximum iterations (100) reached and the optimization hasn't converged yet.
+  % self.max_iter, ConvergenceWarning)
+Fitting Training Set: 0.7291 seconds
+Predicting on Testing Set: 0.0020 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.98      0.98      0.98        42
+           1       0.99      0.99      0.99        72
+    accuracy                           0.98       114
+   macro avg       0.98      0.98      0.98       114
+weighted avg       0.98      0.98      0.98       114
+Confusion Matrix:
+[[41  1]
+ [ 1 71]]
+--------------------------
+RP+ NN
+--------------------------
+C:\Users\cli09\Miniconda3\envs\ml7641_env37\lib\site-packages\sklearn\neural_network\multilayer_perceptron.py:566: ConvergenceWarning: Stochastic Optimizer: Maximum iterations (100) reached and the optimization hasn't converged yet.
+  % self.max_iter, ConvergenceWarning)
+Fitting Training Set: 0.7828 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.95      0.95      0.95        42
+           1       0.97      0.97      0.97        72
+    accuracy                           0.96       114
+   macro avg       0.96      0.96      0.96       114
+weighted avg       0.96      0.96      0.96       114
+Confusion Matrix:
+[[40  2]
+ [ 2 70]]
+--------------------------
+KMEANS+ NN
+--------------------------
+C:\Users\cli09\Miniconda3\envs\ml7641_env37\lib\site-packages\sklearn\neural_network\multilayer_perceptron.py:566: ConvergenceWarning: Stochastic Optimizer: Maximum iterations (100) reached and the optimization hasn't converged yet.
+  % self.max_iter, ConvergenceWarning)
+Fitting Training Set: 0.7870 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       1.00      0.95      0.98        42
+           1       0.97      1.00      0.99        72
+    accuracy                           0.98       114
+   macro avg       0.99      0.98      0.98       114
+weighted avg       0.98      0.98      0.98       114
+Confusion Matrix:
+[[40  2]
+ [ 0 72]]
+--------------------------
+GMM+ NN
+--------------------------
+C:\Users\cli09\Miniconda3\envs\ml7641_env37\lib\site-packages\sklearn\neural_network\multilayer_perceptron.py:566: ConvergenceWarning: Stochastic Optimizer: Maximum iterations (100) reached and the optimization hasn't converged yet.
+  % self.max_iter, ConvergenceWarning)
+Fitting Training Set: 0.8393 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       1.00      0.95      0.98        42
+           1       0.97      1.00      0.99        72
+    accuracy                           0.98       114
+   macro avg       0.99      0.98      0.98       114
+weighted avg       0.98      0.98      0.98       114
+Confusion Matrix:
+[[40  2]
+ [ 0 72]]

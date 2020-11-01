@@ -1,0 +1,111 @@
+--------------------------
+NN
+--------------------------
+Fitting Training Set: 0.4542 seconds
+Predicting on Testing Set: 0.0000 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.97      1.00      0.98        64
+           1       1.00      0.95      0.97        40
+    accuracy                           0.98       104
+   macro avg       0.98      0.97      0.98       104
+weighted avg       0.98      0.98      0.98       104
+Confusion Matrix:
+[[64  0]
+ [ 2 38]]
+
+--------------------------
+PCA + NN
+--------------------------
+Fitting Training Set: 0.4847 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.97      0.97      0.97        64
+           1       0.95      0.95      0.95        40
+    accuracy                           0.96       104
+   macro avg       0.96      0.96      0.96       104
+weighted avg       0.96      0.96      0.96       104
+Confusion Matrix:
+[[62  2]
+ [ 2 38]]
+
+--------------------------
+ICA + NN
+--------------------------
+Fitting Training Set: 0.4457 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.83      0.98      0.90        64
+           1       0.96      0.68      0.79        40
+    accuracy                           0.87       104
+   macro avg       0.90      0.83      0.85       104
+weighted avg       0.88      0.87      0.86       104
+Confusion Matrix:
+[[63  1]
+ [13 27]]
+
+--------------------------
+KPCA + NN
+--------------------------
+Fitting Training Set: 0.4941 seconds
+Predicting on Testing Set: 0.0020 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.97      0.95      0.96        64
+           1       0.93      0.95      0.94        40
+    accuracy                           0.95       104
+   macro avg       0.95      0.95      0.95       104
+weighted avg       0.95      0.95      0.95       104
+Confusion Matrix:
+[[61  3]
+ [ 2 38]]
+
+--------------------------
+RP+ NN
+--------------------------
+Fitting Training Set: 0.4140 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.95      0.97      0.96        64
+           1       0.95      0.93      0.94        40
+    accuracy                           0.95       104
+   macro avg       0.95      0.95      0.95       104
+weighted avg       0.95      0.95      0.95       104
+Confusion Matrix:
+[[62  2]
+ [ 3 37]]
+
+--------------------------
+KMEANS+ NN
+--------------------------
+Fitting Training Set: 0.4453 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.98      1.00      0.99        64
+           1       1.00      0.97      0.99        40
+    accuracy                           0.99       104
+   macro avg       0.99      0.99      0.99       104
+weighted avg       0.99      0.99      0.99       104
+Confusion Matrix:
+[[64  0]
+ [ 1 39]]
+
+--------------------------
+GMM+ NN
+--------------------------
+Fitting Training Set: 0.4566 seconds
+Predicting on Testing Set: 0.0010 seconds
+Evaluate on the Test Set
+              precision    recall  f1-score   support
+           0       0.98      1.00      0.99        64
+           1       1.00      0.97      0.99        40
+    accuracy                           0.99       104
+   macro avg       0.99      0.99      0.99       104
+weighted avg       0.99      0.99      0.99       104
+Confusion Matrix:
+[[64  0]
+ [ 1 39]]
