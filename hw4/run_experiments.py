@@ -2,7 +2,7 @@
 import gym
 import sys
 from mdp import MDP
-# from gym.envs.toy_text.frozen_lake import generate_random_map
+from gym.envs.toy_text.frozen_lake import generate_random_map
 
 
 sys.path.append(' .')
@@ -14,46 +14,71 @@ if __name__ == '__main__':
     frozen_flag = True
     gamble_flag = False
     if frozen_flag:
-        vpq_flag = [False, False, True]
+        vpq_flag = [True, True, True]
         n = 25
         # random_map = generate_random_map(size=n, p=0.8)
-        shit = [['SFHHFHHHHHHHHHFFFFFFHFFFH'],
-                ['FFFFFFFFFFHFFFFFFFHFFFFHF'],
-                ['FFHFFFFHHFHFFFHHFFFFFFFFF'],
-                ['FFFFFFFFFFHFFFFFFFFFFHFFF'],
-                ['HFFFFFFFFFFFFFFFFHFFFFFF'],
-                ['FFFFFFFFFFFFFFFFFFFFFFFHF'],
-                ['FHFFHFFFFFHFFFFFFFFHFHHHH'],
-                ['FFFFFHFFFHFFHFFFFFFFFHFHF'],
-                ['FFFHFFHFFFFFHHFFHFFFFFFFF'],
-                ['FHHHHHHFHHHFFFFFFHHHFHFFF'],
-                ['FHHHFFFFFFFFFFFFFFFFHFHFH'],
-                ['FHFHHFHFFHFFHFFFFFFFHFFFF'],
-                ['HFFFFFFFFFFHFFFFFFFHFFFFH'],
-                ['FFFFFFFFFFFHFHFFFFFFHHFHF'],
-                ['FFHFHFFFFHFHFHFFFFFFFFFFF'],
-                ['HFFFFFFFFHFFFFFFFFFFFHFHF'],
-                ['FFFHFFFFFFHFHFFFFFHFHHFFF'],
-                ['HFFFFFHFHHHFFFHFFFFHFFFFH'],
-                ['FFFFFHFFFHFFFFHFFFHFFFFHF'],
-                ['HFFFFFFFFFFFFFFFFFFHFHFFF'],
-                ['FFFHFFFFFFFHFFFHFFFFHHFFF'],
-                ['FFFFFFFFFFHFFHHFFFFFFFFFF'],
-                ['FFFFFFFFFFFFFFFFFHFFFFFHF'],
-                ['FHHHHFFFHFFFFFFHFFHFFFFFF'],
-                ['HHHFHHFHFHHFFFFFFFFFFFFFG']]
+        # shit = [['SFHHFHHHHHHHHHFFFFFFHFFFH'],
+        #         ['FFFFFFFFFFHFFFFFFFHFFFFHF'],
+        #         ['FFHFFFFHHFHFFFHHFFFFFFFFF'],
+        #         ['FFFFFFFFFFHFFFFFFFFFFHFFF'],
+        #         ['HFFFFFFFFFFFFFFFFHFFFFFF'],
+        #         ['FFFFFFFFFFFFFFFFFFFFFFFHF'],
+        #         ['FHFFHFFFFFHFFFFFFFFHFHHHH'],
+        #         ['FFFFFHFFFHFFHFFFFFFFFHFHF'],
+        #         ['FFFHFFHFFFFFHHFFHFFFFFFFF'],
+        #         ['FHHHHHHFHHHFFFFFFHHHFHFFF'],
+        #         ['FHHHFFFFFFFFFFFFFFFFHFHFH'],
+        #         ['FHFHHFHFFHFFHFFFFFFFHFFFF'],
+        #         ['HFFFFFFFFFFHFFFFFFFHFFFFH'],
+        #         ['FFFFFFFFFFFHFHFFFFFFHHFHF'],
+        #         ['FFHFHFFFFHFHFHFFFFFFFFFFF'],
+        #         ['HFFFFFFFFHFFFFFFFFFFFHFHF'],
+        #         ['FFFHFFFFFFHFHFFFFFHFHHFFF'],
+        #         ['HFFFFFHFHHHFFFHFFFFHFFFFH'],
+        #         ['FFFFFHFFFHFFFFHFFFHFFFFHF'],
+        #         ['HFFFFFFFFFFFFFFFFFFHFHFFF'],
+        #         ['FFFHFFFFFFFHFFFHFFFFHHFFF'],
+        #         ['FFFFFFFFFFHFFHHFFFFFFFFFF'],
+        #         ['FFFFFFFFFFFFFFFFFHFFFFFHF'],
+        #         ['FHHHHFFFHFFFFFFHFFHFFFFFF'],
+        #         ['HHHFHHFHFHHFFFFFFFFFFFFFG']]
+        shit = ['SFHHFHHHHHHHHHFFFFFFHFFFH',
+                'FFFFFFFFFFHFFFFFFFHFFFFHF',
+                'FFHFFFFHHFHFFFHHFFFFFFFFF',
+                'FFFFFFFFFFHFFFFFFFFFFHFFF',
+                'HFFFFFFFFFFFFFFFFHFFFFFFF',
+                'FFFFFFFFFFFFFFFFFFFFFFFHF',
+                'FHFFHFFFFFHFFFFFFFFHFHHHH',
+                'FFFFFHFFFHFFHFFFFFFFFHFHF',
+                'FFFHFFHFFFFFHHFFHFFFFFFFF',
+                'FHHHHHHFHHHFFFFFFHHHFHFFF',
+                'FHHHFFFFFFFFFFFFFFFFHFHFH',
+                'FHFHHFHFFHFFHFFFFFFFHFFFF',
+                'HFFFFFFFFFFHFFFFFFFHFFFFH',
+                'FFFFFFFFFFFHFHFFFFFFHHFHF',
+                'FFHFHFFFFHFHFHFFFFFFFFFFF',
+                'HFFFFFFFFHFFFFFFFFFFFHFHF',
+                'FFFHFFFFFFHFHFFFFFHFHHFFF',
+                'HFFFFFHFHHHFFFHFFFFHFFFFH',
+                'FFFFFHFFFHFFFFHFFFHFFFFHF',
+                'HFFFFFFFFFFFFFFFFFFHFHFFF',
+                'FFFHFFFFFFFHFFFHFFFFHHFFF',
+                'FFFFFFFFFFHFFHHFFFFFFFFFF',
+                'FFFFFFFFFFFFFFFFFHFFFFFHF',
+                'FHHHHFFFHFFFFFFHFFHFFFFFF',
+                'HHHFHHFHFHHFFFFFFFFFFFFFG']
         # frozen_lake_env = gym.make('FrozenLake-v0',desc=random_map).unwrapped
         # Q_design of experiments
-        holerewards = [-2]# [-0.5, -1, -2, -5, -50, -1] #[-2, -1, -2, -2, -2, -2, -2, -2, -2, -2]
-        Edecay = [.999]#[.99, .99, .99, .99, .99, .999] #[.99, .99, .999, .95, .9, .8, .99, .99, .99, .99]
-        Adecay = [.99]#[.99, .99, .99, .99, .99, .99] #[.99, .99, .99, .99, .99, .99, .999, .95, .9, .8]
-        num_ep = [100000]#[50000, 50000, 50000, 50000, 50000, 100000] #120000
+        holerewards = [-2, -2]# [-0.5, -1, -2, -5, -50, -1] #[-2, -1, -2, -2, -2, -2, -2, -2, -2, -2]
+        Edecay = [.999, .999]#[.99, .99, .99, .99, .99, .999] #[.99, .99, .999, .95, .9, .8, .99, .99, .99, .99]
+        Adecay = [.99, .99]#[.99, .99, .99, .99, .99, .99] #[.99, .99, .99, .99, .99, .99, .999, .95, .9, .8]
+        num_ep = [100000, 500000]#[50000, 50000, 50000, 50000, 50000, 100000] #120000
 
         for i in range(len(Adecay)):
             mapname = 'FrozenLake_experiment'+str(i) #'FrozenLake'+str(n)+'x'+str(n)
             print('-'*5, mapname, ' holeRew: ', holerewards[i], ' | eps decay: ', Edecay[i], ' | learn rate decay: ', Adecay[i])
             frozen_lake_env = gym.make('CustomRewardedFrozenLake-v0',desc=shit, map_name='25x25', rewarding=True, step_reward=-0.1, hole_reward=holerewards[i], is_slippery=False).unwrapped
-            # frozen_lake_env.render()
+            frozen_lake_env.render()
             frozen_lake = MDP(env_name=mapname, environment=frozen_lake_env, convergence_threshold=0.0001, grid=True, max_iterations=1000)
             # print('Frozen Lake ', n, ' x ', n)
             if vpq_flag[0]:
